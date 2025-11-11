@@ -2,7 +2,13 @@
   "compilerOptions": {
     "rootDir": ".",
     "paths": {
-      "react-native-zoom-pan-pinch": ["./src/index"]
+      "react-native-zoom-pan-pinch": ["./src/index"],
+      "@/*": ["./src/*"],
+      "@/types": ["./src/types/index"],
+      "@/constants": ["./src/constants.ts"],
+      "@/components/core": ["./src/components/core"],
+      "@/utils": ["./src/utils/index.ts"],
+      "@/libs": ["./src/libs/index.ts"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
