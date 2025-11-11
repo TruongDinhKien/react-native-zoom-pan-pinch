@@ -125,7 +125,7 @@ export type RNZoomPanPinchProps = {
   ) => void;
   onInit?: (ref: RNZoomPanPinchRef) => void;
 
-  panning: {
+  panning?: {
     disabled?: boolean;
     velocityDisabled?: boolean;
     lockAxisX?: boolean;
@@ -135,13 +135,13 @@ export type RNZoomPanPinchProps = {
     step?: number;
     disabled?: boolean;
   };
-  zoomAnimation: {
+  zoomAnimation?: {
     disabled?: boolean;
     size?: number;
     animationTime?: number;
     animationType?: EasingName;
   };
-  alignmentAnimation: {
+  alignmentAnimation?: {
     disabled?: boolean;
     sizeX: number;
     sizeY: number;
