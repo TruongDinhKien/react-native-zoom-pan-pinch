@@ -1,7 +1,6 @@
-import type { RNZoomPanPinch } from '@/core';
-import { InstanceHandlers } from '@/utils';
+import type { RNZoomPanPinch } from '@/components/core';
 import { Animation } from '@/libs';
-// --------------------------------------------------
+
 export type TStaticKeys<T> = Exclude<keyof T, 'prototype'>;
 
 export type DeepNonNullable<T> = T extends (...args: any[]) => any
@@ -18,21 +17,25 @@ export type DeepNonNullableObject<T> = {
   [P in keyof T]-?: DeepNonNullable<NonNullable<T[P]>>;
 };
 
-// --------------------------------------------------
 export type TStaticValues<T> = T[TStaticKeys<T>];
 
 export type RNZoomPanPinchContext = typeof RNZoomPanPinch.prototype;
 
 export type AnimationOptions = {
-  animationTime?: number;
-  animationType?: AnimationType;
+  duration?: number;
+  easing?: EasingName;
+};
+
+export type AnimationParams = AnimationOptions & {
+  instance: RNZoomPanPinch;
+  to: StateType;
 };
 
 export interface IZoomOpts extends AnimationOptions {
   step?: number;
 }
 
-export interface SetTransformOpts extends AnimationOptions {
+export interface SetTransformParams extends AnimationOptions {
   newPositionX: number;
   newPositionY: number;
   newScale: number;
@@ -54,10 +57,16 @@ export type RNZoomPanPinchState = {
   positionY: number;
 };
 
+export type ZoomFunction = (
+  step?: number,
+  duration?: number,
+  easing?: EasingName
+) => void;
+
 export type RNZoomPanPinchHandlers = {
-  zoomIn: ReturnType<typeof InstanceHandlers.zoomIn>;
-  zoomOut: ReturnType<typeof InstanceHandlers.zoomOut>;
-  setTransform: ReturnType<typeof InstanceHandlers.setTransform>;
+  zoomIn: ZoomFunction;
+  zoomOut: ZoomFunction;
+  setTransform: (params: SetTransformParams) => void;
 };
 export type RNZoomPanPinchContextState = {
   instance: RNZoomPanPinchContext;
@@ -70,7 +79,7 @@ export type StateType = {
   positionY: number;
 };
 
-export type RNZoomPanPinchContextRef = {
+export type RNZoomPanPinchContentRef = {
   instance: RNZoomPanPinchContext;
 } & RNZoomPanPinchHandlers;
 
@@ -81,10 +90,10 @@ export type RNZoomPanPinchRefProps = {
   setRef: (context: RNZoomPanPinchRef) => void;
 } & Omit<RNZoomPanPinchProps, 'ref'>;
 
-export type RNZoomPanPinchProps = {
+export type RNZoomPanPinchProps = Partial<BoundsType> & {
   children?:
     | React.ReactNode
-    | ((ref: RNZoomPanPinchContextRef) => React.ReactNode);
+    | ((ref: RNZoomPanPinchContentRef) => React.ReactNode);
   ref?: React.Ref<RNZoomPanPinchRef>;
   onLayout?: (event: LayoutChangeEvent) => void;
 
@@ -92,10 +101,6 @@ export type RNZoomPanPinchProps = {
   initialPositionX?: number;
   initialPositionY?: number;
   disabled?: boolean;
-  minPositionX?: null | number;
-  maxPositionX?: null | number;
-  minPositionY?: null | number;
-  maxPositionY?: null | number;
   minScale?: number;
   maxScale?: number;
   limitToBounds?: boolean;
@@ -138,24 +143,18 @@ export type RNZoomPanPinchProps = {
   zoomAnimation?: {
     disabled?: boolean;
     size?: number;
-    animationTime?: number;
-    animationType?: EasingName;
-  };
+  } & AnimationOptions;
   alignmentAnimation?: {
     disabled?: boolean;
     sizeX: number;
     sizeY: number;
-    animationTime?: number;
     velocityAlignmentTime?: number;
-    animationType?: EasingName;
-  };
+  } & AnimationOptions;
   velocityAnimation?: {
     disabled?: boolean;
     sensitivity?: number;
-    animationTime?: number;
-    animationType?: EasingName;
     equalToMove?: boolean;
-  };
+  } & AnimationOptions;
 };
 
 export type RNZoomPanPinchComponentHelpers = {
@@ -172,10 +171,6 @@ type ExcludedProps =
   | 'initialScale'
   | 'initialPositionX'
   | 'initialPositionY'
-  | 'minPositionX'
-  | 'maxPositionX'
-  | 'minPositionY'
-  | 'maxPositionY'
   | 'onMoveStart'
   | 'onMove'
   | 'onMoveStop'
@@ -186,7 +181,8 @@ type ExcludedProps =
   | 'onZoom'
   | 'onZoomStop'
   | 'onTransformed'
-  | 'onInit';
+  | 'onInit'
+  | BoundaryProps;
 
 type BoundaryProps =
   | 'minPositionX'
@@ -194,27 +190,10 @@ type BoundaryProps =
   | 'minPositionY'
   | 'maxPositionY';
 
-type LibrarySetup = Pick<RNZoomPanPinchProps, BoundaryProps & 'wrapperWidth'> & // The optional boundary props
-  DeepNonNullable<
-    Omit<
-      RNZoomPanPinchProps,
-      ExcludedProps // The rest, made mandatory
-    >
-  >;
+type LibrarySetup = Pick<RNZoomPanPinchProps, BoundaryProps> &
+  DeepNonNullable<Omit<RNZoomPanPinchProps, ExcludedProps>>;
 
-export interface AnimateOptions {
-  instance: RNZoomPanPinch;
-  to: StateType;
-  duration: number;
-  easing: EasingName;
-}
-
-export type BoundsType = {
-  minPositionX: number;
-  maxPositionX: number;
-  minPositionY: number;
-  maxPositionY: number;
-};
+export type BoundsType = Record<BoundaryProps, number>;
 
 export type PositionType = {
   x: number;
@@ -229,7 +208,7 @@ export type VelocityType = {
 
 export type EasingName = TStaticKeys<typeof Animation>;
 
-export type AnimationType = null | (() => void | number);
+export type AnimationType = () => void | number;
 
 export interface EasingFunction {
   (time: number): number;

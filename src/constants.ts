@@ -29,22 +29,22 @@ export const initialSetup: LibrarySetup = {
   zoomAnimation: {
     disabled: false,
     size: 0.4,
-    animationTime: 200,
-    animationType: 'easeOut',
+    duration: 200,
+    easing: 'easeOut',
   },
   alignmentAnimation: {
     disabled: false,
     sizeX: 100,
     sizeY: 100,
-    animationTime: 200,
+    duration: 200,
     velocityAlignmentTime: 400,
-    animationType: 'easeOut',
+    easing: 'easeOut',
   },
   velocityAnimation: {
     disabled: false,
     sensitivity: 1,
-    animationTime: 400,
-    animationType: 'easeOut',
+    duration: 400,
+    easing: 'easeOut',
     equalToMove: true,
   },
 } as const;
