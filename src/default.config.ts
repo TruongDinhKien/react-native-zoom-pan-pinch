@@ -1,6 +1,6 @@
-import type { LibrarySetup, RNZoomPanPinchState } from '@/types';
+import type { ZoomPanPinchSetup, ZoomPanPinchState } from '@/types';
 
-export const initialState: RNZoomPanPinchState = {
+export const initialState: ZoomPanPinchState = {
   previousScale: 1,
   scale: 1,
   positionX: 0,
@@ -8,12 +8,12 @@ export const initialState: RNZoomPanPinchState = {
 } as const;
 
 const DEFAULT_EASING = 'easeOut';
-export const initialSetup: LibrarySetup = {
+export const initialSetup: ZoomPanPinchSetup = {
   disabled: false,
   minScale: 0.5,
   maxScale: 8,
   limitToBounds: true,
-  centerZoomedOut: false,
+  centerZoomedOut: true,
   centerOnInit: false,
   disablePadding: false,
   smooth: true,

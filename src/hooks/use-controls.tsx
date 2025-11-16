@@ -1,15 +1,15 @@
 import React from 'react';
 
 import { Context } from '@/components';
-import type { RNZoomPanPinchContentRef } from '@/types';
-import { getControls } from '@/utils/context.utils';
+import type { ZoomPanPinchControls } from '@/types';
+import { getControls } from '@/utils';
 
-export const useControls = (): RNZoomPanPinchContentRef => {
+export const useControls = (): ZoomPanPinchControls => {
   const libraryContext = React.useContext(Context);
 
   if (!libraryContext) {
     throw new Error(
-      'RNTransformer must be placed inside RNZoomPanPinchContext'
+      'ZoomPanPinchView must be placed inside ZoomPanPinchContext'
     );
   }
 

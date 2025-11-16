@@ -1,7 +1,9 @@
-import type { RNZoomPanPinch } from '@/components/core';
+import { View } from 'react-native';
 import { Animation } from '@/libs';
 
 export type TStaticKeys<T> = Exclude<keyof T, 'prototype'>;
+export type ViewType = typeof View;
+export type ViewRef = React.ComponentRef<ViewType> | null;
 
 export type DeepNonNullable<T> = T extends (...args: any[]) => any
   ? T
@@ -17,84 +19,68 @@ export type DeepNonNullableObject<T> = {
   [P in keyof T]-?: DeepNonNullable<NonNullable<T[P]>>;
 };
 
-export type TStaticValues<T> = T[TStaticKeys<T>];
-
-export type RNZoomPanPinchContext = typeof RNZoomPanPinch.prototype;
-
 export type AnimationOptions = {
   duration?: number;
   easing?: EasingName;
 };
 
 export type AnimationParams = AnimationOptions & {
-  instance: RNZoomPanPinch;
+  instance: ZoomPanPinch;
   to: StateType;
 };
 
+export interface SetTransformParams extends AnimationOptions, StateType {}
+
 export interface IZoomOpts extends AnimationOptions {
   step?: number;
-}
-
-export interface SetTransformParams extends AnimationOptions {
-  newPositionX: number;
-  newPositionY: number;
-  newScale: number;
 }
 
 export interface ICenterViewOpts extends AnimationOptions {
   scale?: number;
 }
 
-export interface IZoomToElementOpts extends AnimationOptions {
+export interface IZoomToElementOpts extends ICenterViewOpts {
   node: number | string;
-  scale?: number;
 }
 
-export type RNZoomPanPinchState = {
+export interface ZoomPanPinchState extends StateType {
   previousScale: number;
-  scale: number;
-  positionX: number;
-  positionY: number;
-};
+}
 
 export type ZoomFunction = (
-  step?: number,
-  duration?: number,
-  easing?: EasingName
+  step?: IZoomOpts['step'],
+  duration?: IZoomOpts['duration'],
+  easing?: IZoomOpts['easing']
 ) => void;
 
-export type RNZoomPanPinchHandlers = {
+export interface ZoomPanPinchHandler {
   zoomIn: ZoomFunction;
   zoomOut: ZoomFunction;
   setTransform: (params: SetTransformParams) => void;
-};
-export type RNZoomPanPinchContextState = {
-  instance: RNZoomPanPinchContext;
-  state: RNZoomPanPinchState;
+  reset: (duration?: number, easing?: EasingName) => void;
+}
+export type ZoomPanPinchContextState = {
+  instance: ZoomPanPinchContext;
+  state: ZoomPanPinchState;
 };
 
 export type StateType = {
   scale: number;
-  positionX: number;
-  positionY: number;
-};
+} & PositionType;
 
-export type RNZoomPanPinchContentRef = {
-  instance: RNZoomPanPinchContext;
-} & RNZoomPanPinchHandlers;
+export type ZoomPanPinchControls = {
+  instance: ZoomPanPinchContext;
+} & ZoomPanPinchHandler;
 
-export type RNZoomPanPinchRef = RNZoomPanPinchContextState &
-  RNZoomPanPinchHandlers;
+export type ZoomPanPinchRef = ZoomPanPinchContextState & ZoomPanPinchHandler;
 
-export type RNZoomPanPinchRefProps = {
-  setRef: (context: RNZoomPanPinchRef) => void;
-} & Omit<RNZoomPanPinchProps, 'ref'>;
+export type ZoomPanPinchRefProps = {
+  setRef: (context: ZoomPanPinchRef) => void;
+} & Omit<ZoomPanPinchProps, 'ref'>;
 
-export type RNZoomPanPinchProps = Partial<BoundsType> & {
-  children?:
-    | React.ReactNode
-    | ((ref: RNZoomPanPinchContentRef) => React.ReactNode);
-  ref?: React.Ref<RNZoomPanPinchRef>;
+export type ZoomPanPinchProps = Partial<BoundsType> & {
+  children?: React.ReactNode | ((ref: ZoomPanPinchControls) => React.ReactNode);
+  ref?: React.Ref<ZoomPanPinchRef>;
   onLayout?: (event: LayoutChangeEvent) => void;
 
   initialScale?: number;
@@ -109,26 +95,20 @@ export type RNZoomPanPinchProps = Partial<BoundsType> & {
   disablePadding?: boolean;
   smooth?: boolean;
 
-  onMoveStart?: (ref: RNZoomPanPinchRef, event: GestureResponderEvent) => void;
-  onMove?: (ref: RNZoomPanPinchRef, event: GestureResponderEvent) => void;
-  onMoveStop?: (ref: RNZoomPanPinchRef, event: GestureResponderEvent) => void;
+  onMoveStart?: (ref: ZoomPanPinchRef, event: GestureResponderEvent) => void;
+  onMove?: (ref: ZoomPanPinchRef, event: GestureResponderEvent) => void;
+  onMoveStop?: (ref: ZoomPanPinchRef, event: GestureResponderEvent) => void;
   onPinchingStart?: (
-    ref: RNZoomPanPinchRef,
+    ref: ZoomPanPinchRef,
     event: GestureResponderEvent
   ) => void;
-  onPinching?: (ref: RNZoomPanPinchRef, event: GestureResponderEvent) => void;
-  onPinchingStop?: (
-    ref: RNZoomPanPinchRef,
-    event: GestureResponderEvent
-  ) => void;
-  onZoomStart?: (ref: RNZoomPanPinchRef, event: GestureResponderEvent) => void;
-  onZoom?: (ref: RNZoomPanPinchRef, event: GestureResponderEvent) => void;
-  onZoomStop?: (ref: RNZoomPanPinchRef, event: GestureResponderEvent) => void;
-  onTransformed?: (
-    ref: RNZoomPanPinchRef,
-    state: { scale: number; positionX: number; positionY: number }
-  ) => void;
-  onInit?: (ref: RNZoomPanPinchRef) => void;
+  onPinching?: (ref: ZoomPanPinchRef, event: GestureResponderEvent) => void;
+  onPinchingStop?: (ref: ZoomPanPinchRef, event: GestureResponderEvent) => void;
+  onZoomStart?: (ref: ZoomPanPinchRef, event: GestureResponderEvent) => void;
+  onZoom?: (ref: ZoomPanPinchRef, event: GestureResponderEvent) => void;
+  onZoomStop?: (ref: ZoomPanPinchRef, event: GestureResponderEvent) => void;
+  onTransformed?: (ref: ZoomPanPinchRef, state: StateType) => void;
+  onInit?: (ref: ZoomPanPinchRef) => void;
 
   panning?: {
     disabled?: boolean;
@@ -157,7 +137,7 @@ export type RNZoomPanPinchProps = Partial<BoundsType> & {
   } & AnimationOptions;
 };
 
-export type RNZoomPanPinchComponentHelpers = {
+export type ZoomPanPinchComponentHelpers = {
   setComponents: (
     wrapper: React.RefObject<View>,
     content: React.RefObject<View>
@@ -190,14 +170,14 @@ type BoundaryProps =
   | 'minPositionY'
   | 'maxPositionY';
 
-type LibrarySetup = Pick<RNZoomPanPinchProps, BoundaryProps> &
-  DeepNonNullable<Omit<RNZoomPanPinchProps, ExcludedProps>>;
+type ZoomPanPinchSetup = Pick<ZoomPanPinchProps, BoundaryProps> &
+  DeepNonNullable<Omit<ZoomPanPinchProps, ExcludedProps>>;
 
 export type BoundsType = Record<BoundaryProps, number>;
 
 export type PositionType = {
-  x: number;
-  y: number;
+  positionX: number;
+  positionY: number;
 };
 
 export type VelocityType = {
@@ -212,4 +192,59 @@ export type AnimationType = () => void | number;
 
 export interface EasingFunction {
   (time: number): number;
+}
+
+export interface ZoomPanPinch {
+  // --- Thuộc tính Trạng thái & Cấu hình ---
+  props: ZoomPanPinchProps;
+  transformState: ZoomPanPinchState;
+  setup: ZoomPanPinchSetup;
+
+  // --- Trạng thái Component ---
+  mounted: boolean;
+  isInitialized: boolean;
+  isLayoutReady: boolean;
+  bounds: BoundsType | null;
+
+  // --- Kích thước và Vị trí (Wrapper/Content) ---
+  wrapperComponent: ViewRef;
+  contentComponent: ViewRef;
+  wrapperHeight: number;
+  wrapperWidth: number;
+  wrapperX: number; // Đã thêm
+  wrapperY: number; // Đã thêm
+  contentHeight: number;
+  contentWidth: number;
+
+  // --- Helpers Panning ---
+  isPanning: boolean;
+  startCoords: StartCoordsType;
+  clientCoords: ClientCoordsType;
+  lastTouch: number | null;
+  lastTouchPosition: PositionType | null;
+
+  // --- Helpers Pinching ---
+  pinchLastCenterX: number | null;
+  pinchLastCenterY: number | null;
+  distance: null | number;
+  lastDistance: null | number;
+  pinchStartDistance: null | number;
+  pinchStartScale: null | number;
+  pinchMidpoint: null | PositionType;
+
+  // --- Helpers Velocity ---
+  velocity: VelocityType | null;
+  velocityTime: number | null;
+
+  // --- Helpers Animations ---
+  animate: boolean;
+  animation: AnimationType | null;
+
+  // --- Callbacks (Để các hàm logic có thể gọi setTransformState) ---
+  onChangeCallbacks: Set<(ctx: ZoomPanPinchRef) => void>; // Đã thêm
+  onInitCallbacks: Set<(ctx: ZoomPanPinchRef) => void>; // Đã thêm
+
+  // --- Phương thức Cần thiết cho Logic/Utils ---
+  setTransformState: (newState: StateType) => void;
+  applyTransformation: () => void;
 }

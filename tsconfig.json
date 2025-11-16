@@ -5,7 +5,7 @@
       "react-native-zoom-pan-pinch": ["./src/index"],
       "@/*": ["./src/*"],
       "@/types": ["./src/types/index"],
-      "@/constants": ["./src/constants.ts"],
+      "@/constants": ["./src/default.config.ts"],
       "@/components/core": ["./src/components/core"],
       "@/utils": ["./src/utils/index.ts"],
       "@/libs": ["./src/libs/index.ts"]
