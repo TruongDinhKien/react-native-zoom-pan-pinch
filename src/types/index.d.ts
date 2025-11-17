@@ -195,31 +195,29 @@ export interface EasingFunction {
 }
 
 export interface ZoomPanPinch {
-  // --- Thuộc tính Trạng thái & Cấu hình ---
   props: ZoomPanPinchProps;
   transformState: ZoomPanPinchState;
   setup: ZoomPanPinchSetup;
 
-  // --- Trạng thái Component ---
+  // --- Component State ---
   mounted: boolean;
   isInitialized: boolean;
   isLayoutReady: boolean;
   bounds: BoundsType | null;
 
-  // --- Kích thước và Vị trí (Wrapper/Content) ---
+  // --- Wrapper/Content ---
   wrapperComponent: ViewRef;
   contentComponent: ViewRef;
   wrapperHeight: number;
   wrapperWidth: number;
-  wrapperX: number; // Đã thêm
-  wrapperY: number; // Đã thêm
+  wrapperX: number;
+  wrapperY: number;
   contentHeight: number;
   contentWidth: number;
 
   // --- Helpers Panning ---
   isPanning: boolean;
   startCoords: StartCoordsType;
-  clientCoords: ClientCoordsType;
   lastTouch: number | null;
   lastTouchPosition: PositionType | null;
 
@@ -240,11 +238,10 @@ export interface ZoomPanPinch {
   animate: boolean;
   animation: AnimationType | null;
 
-  // --- Callbacks (Để các hàm logic có thể gọi setTransformState) ---
-  onChangeCallbacks: Set<(ctx: ZoomPanPinchRef) => void>; // Đã thêm
-  onInitCallbacks: Set<(ctx: ZoomPanPinchRef) => void>; // Đã thêm
+  // --- Callbacks
+  onChangeCallbacks: Set<(ctx: ZoomPanPinchRef) => void>;
+  onInitCallbacks: Set<(ctx: ZoomPanPinchRef) => void>;
 
-  // --- Phương thức Cần thiết cho Logic/Utils ---
   setTransformState: (newState: StateType) => void;
   applyTransformation: () => void;
 }
