@@ -5,6 +5,7 @@ export const styles = StyleSheet.create({
     position: 'relative',
     overflow: 'hidden',
     backgroundColor: 'red',
+    alignItems: 'flex-start',
   },
   content: {
     backgroundColor: 'black',

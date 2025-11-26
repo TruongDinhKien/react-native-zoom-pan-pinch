@@ -217,13 +217,11 @@ export interface ZoomPanPinch {
 
   // --- Helpers Panning ---
   isPanning: boolean;
-  startCoords: StartCoordsType;
+  startCoords: PositionType | null /* scaled */;
   lastTouch: number | null;
   lastTouchPosition: PositionType | null;
 
   // --- Helpers Pinching ---
-  pinchLastCenterX: number | null;
-  pinchLastCenterY: number | null;
   distance: null | number;
   lastDistance: null | number;
   pinchStartDistance: null | number;
